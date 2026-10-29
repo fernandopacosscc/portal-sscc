@@ -1,6 +1,6 @@
 /* Service worker mínimo: permite instalar la app y que la pantalla de
    bienvenida abra al instante. El portal (Apps Script) siempre va por red. */
-const CACHE = 'portal-sscc-v2';
+const CACHE = 'portal-sscc-v3';
 const ARCHIVOS = ['./', 'index.html', 'manifest.webmanifest', 'icono-192.png', 'icono-512.png', 'favicon.png'];
 
 self.addEventListener('install', e => {
