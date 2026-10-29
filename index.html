@@ -29,7 +29,7 @@
     p{font-size:15px;opacity:.9;max-width:320px;line-height:1.4}
     .spinner{width:34px;height:34px;border-radius:50%;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;animation:g .9s linear infinite}
     @keyframes g{to{transform:rotate(360deg)}}
-    .btn{display:inline-block;background:#fff;color:var(--azul);font-weight:800;text-decoration:none;padding:15px 30px;border-radius:14px;font-size:17px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+    .btn{display:none;background:#fff;color:var(--azul);font-weight:800;text-decoration:none;padding:15px 30px;border-radius:14px;font-size:17px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
   </style>
 </head>
 <body>
@@ -37,7 +37,7 @@
   <h1>Portal Docente</h1>
   <div class="spinner"></div>
   <p>Abriendo el portal…</p>
-  <!-- El botón funciona aunque falle todo lo demás -->
+  <!-- Botón oculto: solo aparece si a los 8 s el portal no se ha abierto -->
   <a class="btn" id="btn" href="https://script.google.com/a/macros/sagradoscorazones.es/s/AKfycbxqaPWXX4VH-CRLVShuNmazmTCVACFiVkTMhPTCo4XxPKFeZqDKxyLdhiwZWzEbLjakDQ/exec">Entrar al portal</a>
 
   <script>
@@ -45,6 +45,9 @@
     setTimeout(function () {
       window.location.replace(document.getElementById('btn').href);
     }, 900);
+
+    // Red de seguridad invisible: solo si algo falla, a los 8 s aparece el botón
+    setTimeout(function () { document.getElementById('btn').style.display = 'inline-block'; }, 8000);
 
     // Limpia cualquier versión vieja que el móvil tuviera guardada
     if ('serviceWorker' in navigator) {
