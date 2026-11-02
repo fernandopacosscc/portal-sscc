@@ -19,43 +19,156 @@
   <style>
     :root{--azul:#1B5FAE;--azul-osc:#0E3F7E;--azul-claro:#3D8BDB;--rojo:#A3191F;--rojo-osc:#7A1016}
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-    body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;text-align:center;padding:24px;position:relative;
+    html,body{min-height:100%;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+    body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#fff;text-align:center;padding:28px 16px 40px;
       background:linear-gradient(160deg,var(--azul-claro) 0%,var(--azul) 45%,var(--azul-osc) 100%)}
     body::after{content:'';position:fixed;left:0;right:0;bottom:0;height:8px;background:linear-gradient(90deg,var(--rojo-osc),var(--rojo) 50%,var(--rojo-osc))}
-    .logo{width:150px;height:150px;border-radius:32px;background:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .logo{width:140px;height:140px;border-radius:30px;background:#fff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(0,0,0,.25);flex-shrink:0}
     .logo img{width:88%;height:auto}
     h1{font-size:26px;font-weight:800}
-    p{font-size:15px;opacity:.9;max-width:320px;line-height:1.4}
+    .sub{font-size:16px;opacity:.92;max-width:360px;line-height:1.45}
     .spinner{width:34px;height:34px;border-radius:50%;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;animation:g .9s linear infinite}
     @keyframes g{to{transform:rotate(360deg)}}
-    .btn{display:none;background:#fff;color:var(--azul);font-weight:800;text-decoration:none;padding:15px 30px;border-radius:14px;font-size:17px;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+
+    .tarjeta{background:#fff;color:#1D2733;border-radius:22px;padding:20px 18px;width:100%;max-width:380px;box-shadow:0 14px 34px rgba(0,0,0,.22);text-align:left}
+    .tarjeta h2{font-size:18px;font-weight:800;color:var(--azul);margin-bottom:12px;text-align:center}
+    .paso{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #E8EDF4;font-size:15.5px;line-height:1.4}
+    .paso:first-of-type{border-top:0}
+    .num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--rojo);color:#fff;font-weight:800;display:grid;place-items:center;font-size:14px}
+    .paso b{color:var(--azul)}
+    .ico{display:inline-block;vertical-align:-4px;width:20px;height:20px}
+
+    .btn{display:block;width:100%;max-width:380px;border:0;cursor:pointer;background:#fff;color:var(--azul);font:inherit;font-weight:800;font-size:19px;text-decoration:none;padding:18px 24px;border-radius:16px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+    .btn.rojo{background:var(--rojo);color:#fff}
+    .btn:active{transform:scale(.97)}
+    .enlace{color:#fff;opacity:.85;font-size:14.5px;text-decoration:underline;margin-top:4px}
+    .ok{font-size:46px;line-height:1}
+    [hidden]{display:none!important}
   </style>
 </head>
 <body>
   <div class="logo"><img src="icono-512.png" alt="Logo Colegio Sagrados Corazones"></div>
   <h1>Portal Docente</h1>
-  <div class="spinner"></div>
-  <p>Abriendo el portal…</p>
-  <!-- Botón oculto: solo aparece si a los 8 s el portal no se ha abierto -->
-  <a class="btn" id="btn" href="https://script.google.com/a/macros/sagradoscorazones.es/s/AKfycbxqaPWXX4VH-CRLVShuNmazmTCVACFiVkTMhPTCo4XxPKFeZqDKxyLdhiwZWzEbLjakDQ/exec">Entrar al portal</a>
+
+  <!-- A) Dentro de la app instalada: abre el portal -->
+  <section id="vAbriendo" hidden>
+    <div class="spinner" style="margin:0 auto 12px"></div>
+    <p class="sub">Abriendo el portal…</p>
+  </section>
+
+  <!-- B) Botón de instalar (Chrome en Android y ordenador) -->
+  <section id="vInstalar" hidden style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px">
+    <p class="sub">Instala la app del colegio en este dispositivo. Solo hay que hacerlo una vez.</p>
+    <button class="btn" id="btnInstalar">⬇️ Instalar Portal Docente</button>
+  </section>
+
+  <!-- C) Instalada con éxito -->
+  <section id="vHecho" hidden>
+    <div class="ok">✅</div>
+    <p class="sub" style="margin-top:10px"><b>¡Listo!</b> Ya tienes la app con el logo del cole en tu <span id="dondeQueda">pantalla de inicio</span>. A partir de ahora entra siempre desde ahí.</p>
+  </section>
+
+  <!-- D) Android: abierto desde Gmail u otro navegador → pasar a Chrome -->
+  <section id="vAndroid" hidden style="width:100%;display:flex;flex-direction:column;align-items:center;gap:14px">
+    <a class="btn rojo" id="btnChrome" href="#">Abrir en Chrome para instalar</a>
+    <div class="tarjeta">
+      <h2>Si ya estás en Chrome</h2>
+      <div class="paso"><span class="num">1</span><span>Toca los <b>tres puntos ⋮</b> de arriba a la derecha.</span></div>
+      <div class="paso"><span class="num">2</span><span>Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.</span></div>
+      <div class="paso"><span class="num">3</span><span>Pulsa <b>Instalar</b>. Aparecerá el logo del cole en tu móvil.</span></div>
+    </div>
+  </section>
+
+  <!-- E) iPhone / iPad -->
+  <section id="vIOS" hidden style="width:100%;display:flex;justify-content:center">
+    <div class="tarjeta">
+      <h2>Instalar en iPhone o iPad</h2>
+      <div class="paso"><span class="num">1</span><span>Abre este enlace en <b>Safari</b>.</span></div>
+      <div class="paso"><span class="num">2</span><span>Toca el botón <b>Compartir</b>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B5FAE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+        (abajo, en el centro).</span></div>
+      <div class="paso"><span class="num">3</span><span>Baja y elige <b>Añadir a pantalla de inicio</b>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B5FAE" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>.</span></div>
+      <div class="paso"><span class="num">4</span><span>Pulsa <b>Añadir</b>. Aparecerá el logo del cole en tu pantalla.</span></div>
+    </div>
+  </section>
+
+  <!-- F) Ordenador sin botón disponible -->
+  <section id="vPC" hidden style="width:100%;display:flex;justify-content:center">
+    <div class="tarjeta">
+      <h2>Instalar en el ordenador</h2>
+      <div class="paso"><span class="num">1</span><span>Abre este enlace en <b>Google Chrome</b>.</span></div>
+      <div class="paso"><span class="num">2</span><span>En la barra de direcciones, a la derecha, pulsa el icono <b>Instalar</b>
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#1B5FAE" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M12 8v6M9 11l3 3 3-3M8 21h8"/></svg>.
+        Si no lo ves: <b>⋮ → Enviar, guardar y compartir → Instalar página como aplicación</b>.</span></div>
+      <div class="paso"><span class="num">3</span><span>Pulsa <b>Instalar</b>. Tendrás el logo del cole en el escritorio.</span></div>
+      <div class="paso"><span class="num">✓</span><span>¿Ya la tenías? Chrome muestra arriba <b>Abrir en aplicación</b>.</span></div>
+    </div>
+  </section>
+
+  <!-- Siempre disponible en el navegador -->
+  <a class="enlace" id="sinInstalar" hidden href="#">Entrar al portal sin instalar</a>
 
   <script>
-    // Abre el portal automáticamente al segundo. El enlace es el del botón de arriba.
+  (function () {
+    /* ===== Enlace del Portal Docente (Apps Script) ===== */
+    var PORTAL_URL = 'https://script.google.com/a/macros/sagradoscorazones.es/s/AKfycbxqaPWXX4VH-CRLVShuNmazmTCVACFiVkTMhPTCo4XxPKFeZqDKxyLdhiwZWzEbLjakDQ/exec';
+
+    var $ = function (id) { return document.getElementById(id); };
+    function ver(id) { ['vAbriendo','vInstalar','vHecho','vAndroid','vIOS','vPC'].forEach(function (v) { $(v).hidden = (v !== id); }); }
+
+    var ua = navigator.userAgent;
+    var esIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var esAndroid = /Android/i.test(ua);
+    var enApp = (window.matchMedia && (matchMedia('(display-mode: standalone)').matches ||
+                 matchMedia('(display-mode: window-controls-overlay)').matches ||
+                 matchMedia('(display-mode: minimal-ui)').matches)) || navigator.standalone === true;
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+    if (window.caches) caches.keys().then(function (k) { k.forEach(function (n) { caches.delete(n); }); }).catch(function () {});
+
+    /* ---- A) Abierto desde la app instalada → al portal ---- */
+    if (enApp) {
+      ver('vAbriendo');
+      setTimeout(function () { location.replace(PORTAL_URL); }, 700);
+      return;
+    }
+
+    /* ---- Abierto en el navegador → instalar ---- */
+    $('sinInstalar').href = PORTAL_URL;
+    $('sinInstalar').hidden = false;
+    $('btnChrome').href = 'intent://' + location.host + location.pathname +
+      '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(location.href) + ';end';
+    $('dondeQueda').textContent = (esAndroid || esIOS) ? 'pantalla de inicio' : 'escritorio y en el menú de inicio';
+
+    var avisoInstalar = null;
+
+    // Chrome avisa de que se puede instalar → botón grande de un toque
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      avisoInstalar = e;
+      ver('vInstalar');
+    });
+
+    $('btnInstalar').addEventListener('click', function () {
+      if (!avisoInstalar) return;
+      avisoInstalar.prompt();
+      avisoInstalar.userChoice.then(function (r) {
+        if (r.outcome === 'accepted') ver('vHecho');
+        avisoInstalar = null;
+      });
+    });
+
+    window.addEventListener('appinstalled', function () { ver('vHecho'); });
+
+    if (esIOS) { ver('vIOS'); return; }
+
+    // Si Chrome no ofrece el botón en 2,5 s (abierto desde Gmail, otro navegador o ya instalada) → instrucciones
     setTimeout(function () {
-      window.location.replace(document.getElementById('btn').href);
-    }, 900);
-
-    // Red de seguridad invisible: solo si algo falla, a los 8 s aparece el botón
-    setTimeout(function () { document.getElementById('btn').style.display = 'inline-block'; }, 8000);
-
-    // Limpia cualquier versión vieja que el móvil tuviera guardada
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
-    }
-    if (window.caches) {
-      caches.keys().then(function (k) { k.forEach(function (n) { caches.delete(n); }); }).catch(function () {});
-    }
+      if (avisoInstalar || !$('vHecho').hidden) return;
+      ver(esAndroid ? 'vAndroid' : 'vPC');
+    }, 2500);
+  })();
   </script>
 </body>
 </html>
